@@ -1,0 +1,9 @@
+#!/bin/bash
+
+while read num
+do 
+        if [ "$num" == "42" ] 
+        then exit
+        else echo $num
+        fi
+done     
