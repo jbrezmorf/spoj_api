@@ -24,12 +24,15 @@ class SpojApi:
     pass_=""
     br=Browser()
 # methods
-    def __init__(self):      
+    def __init__(self, local_file=None):      
         # let browser fool robots.txt
         self.br.addheaders = [('User-agent', 'Mozilla/5.0 (X11; U; Linux i686; en-US; \
               rv:1.9.0.1) Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1')]
         self.br.set_handle_robots(False)
-          
+        
+        if (local_file):
+              self.br.open_local_file(local_file)
+
     # login to the SPOJ under browser 'br'    
     def login(self, username, password):
 
@@ -78,6 +81,9 @@ class SpojApi:
         submission_id = int(m.group(1))
         return submission_id
 
+    # fetch given url    
+    def fetch_from_link(self,  url ):
+        return self.br.open_novisit(url).read()
     #
     # Extract all accessible submission results.
     # Only search on the first page of the user status.
@@ -87,7 +93,55 @@ class SpojApi:
         items_per_page=20
         
         pg=self.br.open("http://www.spoj.pl/status/" + self.user_ + "/all")
-        open("status.html","w").write(pg.read())
+        #pg=self.br.open_local_file("status.html")
+        #open("status.html","w").write( pg.read() )
+        
+        from BeautifulSoup import BeautifulSoup
+        
+        row_data = {}
+        row_data['id'] = sub_id
+        
+        soup = BeautifulSoup( pg.read() )
+        # get max id of the list (may not be presented)
+        max_id=soup.find("input", { "id" : "max_id"}, recursive=True)['value']
+        
+        # get the link to the submitted source, the first cell on the status row
+        # this link points to: /files/src/<sub_id>
+        id_link=soup.find("a", {"sid" : str(sub_id), "title" :"View source code"}, recursive=True)
+        
+        row=id_link.parent.parent
+        # cells on status row:
+        # 0 - submition ID link
+        # 1 - selection checkbox
+        # 2 - date and time of submission
+        # 3 - problem link
+        # 4 - result (text + edit and run links)
+        # 5 - time (link to best times)
+        # 6 - mem (link to stdio for the problem author)
+        # 7 - lang (link to results of individual tests)
+        #cell_date = cell_id.nextSibling
+            
+        row_data['date'] = row.find("td", "status_sm").string.strip()
+        row_data['result'] = row.find("td", "statusres").contents[0].strip()
+        row_data['time'] = row.find("td", id="statustime_"+str(sub_id)).a.string.strip()
+        cell_mem = row.find("td", id="statusmem_"+str(sub_id))
+        if (cell_mem.a):
+              row_data['mem'] = cell_mem.a.string.strip()
+              stdio_link = "/files/stderr/" + str(sub_id)
+              row_data['stdio'] = self.fetch_from_link( stdio_link )
+        else:
+              row_data['mem'] = cell_mem.string.strip()
+        
+                        
+        cell_lang = row.find("td", "slang")
+        if (cell_lang.a):
+              test_link = "/files/psinfo/" + str(sub_id)
+              row_data['test_info'] = self.fetch_from_link( test_link )
+        
+        print row_data
+        
+        
+        
         
         # TODO:
         # use firefox and status.html to ...
@@ -96,15 +150,22 @@ class SpojApi:
     
     
 ###################################################################################### Main    
-    
+
+
 spoj = SpojApi()    
-    
-spoj.login( user, password )
 
-source = open("test.bash.src", "r").read()
-id=spoj.submit("TEST", source, "28")    
+from netrc import netrc # read login data from .netrc
+user, _, password = netrc().authenticators('spoj.com')  # read from ~/.netrc
 
-spoj.get_sub_results(id)
+spoj.login( user, password)
+
+#source = open("test.bash.src", "r").read()
+#id=spoj.submit("TEST", source, "28")    
+
+
+#spoj = SpojApi( "status.html" )
+#spoj.get_sub_results(10016747)
+spoj.get_sub_results(10020980)
 
 
 
@@ -128,7 +189,6 @@ open("result.html","w").write(resp.read())
 
 '''  
 
-from netrc import netrc # read login data from .netrc
 
 from urllib import urlencode, quote
 from urllib2 import urlopen
