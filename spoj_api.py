@@ -6,9 +6,19 @@ import webbrowser
 try:
     from mechanize import *
 except ImportError:
-    print "mechanize required but missing"
+    print "module 'mechanize' required but missing"
     sys.exit(1)
 
+try:
+    from BeautifulSoup import BeautifulSoup
+except ImportError:
+    print "module 'BeautifulSoup' required but missing"
+    sys.exit(1)
+    
+    
+    
+
+spoj_url="https://www.spoj.com"
     
 # create a browser object
 
@@ -23,6 +33,16 @@ class SpojApi:
     user_=""
     pass_=""
     br=Browser()
+    
+    # SPOJ result strings
+    result_strings={ 'compiling' : "compiling",
+                     'compile_error' : "compilation error",
+                     'running' : "running",
+                     'running_j': "running judge",
+                     'accepted' :  "accepted",
+                     'wrong' : "wrong answer",
+                     'error' : "runtime error",
+                     'limit' : "time limit exceeded"}
 # methods
     def __init__(self, local_file=None):      
         # let browser fool robots.txt
@@ -38,7 +58,7 @@ class SpojApi:
 
         # authenticate the user
         # print "Authenticating " + username
-        self.br.open ("http://spoj.pl")
+        self.br.open (spoj_url)
         self.br.select_form (name="login")
         self.br["login_user"] = username
         self.br["password"] = password
@@ -67,7 +87,7 @@ class SpojApi:
             return False
 
         # try to submit
-        self.br.open("http://www.spoj.pl/submit")
+        self.br.open(spoj_url + "/submit")
         self.br.select_form(predicate=complete_form_predicate)
         self.br["file"] = source
         self.br["lang"] = [lang]
@@ -92,7 +112,7 @@ class SpojApi:
         # items on one status page
         items_per_page=20
         
-        pg=self.br.open("http://www.spoj.pl/status/" + self.user_ + "/all")
+        pg=self.br.open(spoj_url + "/status/" + self.user_ + "/all")
         #pg=self.br.open_local_file("status.html")
         #open("status.html","w").write( pg.read() )
         
@@ -122,23 +142,31 @@ class SpojApi:
         #cell_date = cell_id.nextSibling
             
         row_data['date'] = row.find("td", "status_sm").string.strip()
-        row_data['result'] = row.find("td", "statusres").contents[0].strip()
+        row_data['result_full'] = row.find("td", "statusres").contents[0].strip()
+        row_data['result'] = "unknown"
+        for key,result in self.result_strings.iteritems() :
+            if ( row_data['result_full'].find(result) > -1 ) :
+                row_data['result'] = result
+        if (row_data['result'] == "unknown") : 
+            print "Unknown result string: '" + row_data['result_full'] + "'"
+                
         row_data['time'] = row.find("td", id="statustime_"+str(sub_id)).a.string.strip()
         cell_mem = row.find("td", id="statusmem_"+str(sub_id))
         if (cell_mem.a):
               row_data['mem'] = cell_mem.a.string.strip()
-              stdio_link = "/files/stderr/" + str(sub_id)
-              row_data['stdio'] = self.fetch_from_link( stdio_link )
         else:
               row_data['mem'] = cell_mem.string.strip()
         
+        stdio_link = "/files/stderr/" + str(sub_id)
+        row_data['stdio'] = self.fetch_from_link( stdio_link )
                         
         cell_lang = row.find("td", "slang")
-        if (cell_lang.a):
-              test_link = "/files/psinfo/" + str(sub_id)
-              row_data['test_info'] = self.fetch_from_link( test_link )
+
+        test_link = "/files/psinfo/" + str(sub_id)
+        row_data['test_info'] = self.fetch_from_link( test_link )
         
         print row_data
+        return row_data
         
         
         
@@ -150,24 +178,49 @@ class SpojApi:
     
     
 ###################################################################################### Main    
+#
+# Test usage.
 
+import sys
+import getpass
+import time
 
 spoj = SpojApi()    
 
-from netrc import netrc # read login data from .netrc
-user, _, password = netrc().authenticators('spoj.com')  # read from ~/.netrc
+print("SPOJ url: " + spoj_url)
 
-spoj.login( user, password)
+print "SPOJ username:"
+username= sys.stdin.readline()
 
-#source = open("test.bash.src", "r").read()
-#id=spoj.submit("TEST", source, "28")    
+print "SPOJ password:"
+password= getpass.getpass()
 
+print("Logging in SPOJ ...")
+spoj.login( username, password)
 
-#spoj = SpojApi( "status.html" )
-#spoj.get_sub_results(10016747)
-spoj.get_sub_results(10020980)
+print("Submitting the source ...")
+source = open("test.bash.src", "r").read()
+id=spoj.submit("TEST", source, "28")    
+print("Submition id: ", id)
+print("Getting results ...")
 
+result=spoj.result_strings['compiling']
+while ( result == spoj.result_strings['compiling'] or
+        result == spoj.result_strings['running'] or
+        result == spoj.result_strings['running_j']) :
+  print result
+  time.sleep(0.5)
+  data=spoj.get_sub_results(id)
+  result=data['result']
 
+  
+print "Results: "
+print data['date']
+print data['result']
+print data['time']
+print data['mem']
+print data['stdio']
+print data['test_info']
 
 
 
