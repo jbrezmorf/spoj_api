@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<problems>
+	<item value="4" ext="py">Python (python 2.7)</item>
+<!--
+	<item value="7">ADA 95 (gnat 4.3.2)</item>
+	<item value="13">Assembler (nasm 2.03.01)</item>
+	<item value="104">Awk (gawk-3.1.6)</item>
+	<item value="28">Bash (bash-4.0.37)</item>
+	<item value="12">Brainf**k (bff 1.0.3.1)</item>
+	-->
+	<item value="11" ext="c">C (gcc 4.3.2)</item>
+	<item value="27" ext="cs">C# (gmcs 2.0.1)</item>
+	<item value="41" ext="cpp">C++ (g++ 4.3.2)</item>
+<!--
+	<item value="1">C++ (g++ 4.0.0-8)</item>
+	<item value="34">C99 strict (gcc 4.3.2)</item>
+	<item value="14">Clips (clips 6.24)</item>
+	<item value="111">Clojure (clojure 1.1.0)</item>
+	<item value="31">Common Lisp (sbcl 1.0.18)</item>
+	<item value="32">Common Lisp (clisp 2.44.1)</item>
+	<item value="20">D (gdc 4.1.3)</item>
+	<item value="36">Erlang (erl 5.6.3)</item>
+	<item value="124">F# (fsharp 2.0.0)</item>
+	-->
+	<item value="5" ext="f90">Fortran 95 (gfortran 4.3.2)</item>
+	<item value="114" ext="go">Go (gc 2010-07-14)</item>
+<!--	<item value="21">Haskell (ghc 6.10.4)</item>
+	<item value="16">Icon (iconc 9.4.3)</item>
+	<item value="9">Intercal (ick 0.28-4)</item>
+	<item value="24">JAR (JavaSE 6)</item>-->
+	<item value="10" ext="java">Java (JavaSE 6)</item>
+	<item value="35" ext="js">JavaScript (rhino 1.7R1-2)</item>
+<!--
+	<item value="26">Lua (luac 5.1.3)</item>
+	<item value="30">Nemerle (ncc 0.9.3)</item>
+	<item value="25">Nice (nicec 0.9.6)</item>
+	<item value="56">Node.js (0.8.11)</item>
+	<item value="8">Ocaml (ocamlopt 3.10.2)</item>
+	<item value="22">Pascal (fpc 2.2.4)</item>-->
+	<item value="2" ext="pas">Pascal (gpc 20070904)</item>
+	<item value="3" ext="perl">Perl (perl 5.12.1)</item>
+	<!--<item value="54">Perl 6 (rakudo-2010.08)</item>
+	-->
+	<item value="29" ext="php">PHP (php 5.2.6)</item>
+<!--
+	<item value="19">Pike (pike 7.6.112)</item>
+	<item value="15">Prolog (swipl 5.6.58)</item>
+	-->
+
+<!--
+	<item value="116">Python 3 (python 3.2.3)</item>
+	<item value="126">Python 3 nbc (python 3.2.3 nbc)</item>
+	<item value="17">Ruby (ruby 1.9.3)</item>
+	<item value="39">Scala (scala 2.8.0)</item>
+	<item value="33">Scheme (guile 1.8.5)</item>
+	<item value="18">Scheme (stalin 0.11)</item>
+	<item value="46">Sed (sed-4.2)</item>
+	<item value="23">Smalltalk (gst 3.0.3)</item>
+	<item value="38">Tcl (tclsh 8.5.3)</item>
+	<item value="62">Text (plain text)</item>
+	<item value="6">Whitespace (wspace 0.3)</item>
+	-->
+</problems>

@@ -1,0 +1,12 @@
+import sys
+
+while(1):
+        try:
+            line = sys.stdin.readline()
+            i = int(line)
+        except ValueError:
+            i = 0
+        if (i==42):
+                break
+        else :
+                print line
