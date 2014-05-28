@@ -199,9 +199,10 @@ class SpojApi:
               row_data['mem'] = cell_mem.string.strip()
         
         row_data['stdio']=""
-        if (row_data['result'] == "compile_error"):
+        if (row_data['result'] == self.result_strings['compile_error'] ):            
+           
             stdio_link = spoj_url + "/files/error/" + str(sub_id)
-            row_data['stdio'] = self.fetch_from_link( stdio_link )
+            row_data['stdio'] = self.fetch_from_link( stdio_link , 1)
         else :
             if (row_data['result'] == "runtime error"):
                 row_data['result_full']=""

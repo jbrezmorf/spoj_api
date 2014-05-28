@@ -10,15 +10,15 @@ echo "====================== TEST Python"
 
 # C++ 41
 echo "====================== TEST C++ Accepted"
-#python spoj_run.py TEST 41 test_accepted.cpp
+#python spoj_run.py SEGMENT 41 test_accepted.cpp
 
 echo "====================== TEST C++ Wrong answer"
-#python spoj_run.py TEST 41 test_wrong.cpp
+#python spoj_run.py SEGMENT 41 test_wrong.cpp
 
 echo "====================== TEST C++ Run error"
 python spoj_run.py SEGMENT 41 test_run_err_SEGV.cpp
 
 #python spoj_run.py SEGMENT 41 test_run_err.cpp
 
-echo "====================== TEST C++ Compile error"
+#echo "====================== TEST C++ Compile error"
 #python spoj_run.py SEGMENT 41 test_compile_err.cpp
